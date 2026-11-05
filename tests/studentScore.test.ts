@@ -193,3 +193,37 @@ describe('getEctsGrade', () => {
     }
   );
 });
+
+
+// Тестування повного результату
+
+describe('calculateStudentResult', () => {
+
+  it('returns both the weighted score and its ECTS grade', () => {
+
+    expect(
+      calculateStudentResult({
+        laboratories: 80,
+        tests: 90,
+        project: 100
+      })
+    ).toEqual({
+      weightedScore: 91,
+      ectsGrade: 'A'
+    });
+  });
+
+  it('uses the rounded weighted score to determine the ECTS grade', () => {
+
+    expect(
+      calculateStudentResult({
+        laboratories: 89.99,
+        tests: 89.99,
+        project: 89.99
+      })
+    ).toEqual({
+      weightedScore: 89.99,
+      ectsGrade: 'B'
+    });
+  });
+});
