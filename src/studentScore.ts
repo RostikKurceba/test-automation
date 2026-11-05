@@ -1,3 +1,4 @@
+
 export type AssessmentType = 'laboratories' | 'tests' | 'project';
 
 export type EctsGrade = 'A' | 'B' | 'C' | 'D' | 'E' | 'FX' | 'F';
@@ -38,6 +39,19 @@ function validateScore(
   }
 }
 
+// Перевірка всіх складових оцінювання
+function validateAssessmentScores(scores: StudentScores): void {
+  const assessments: AssessmentType[] = [
+    'laboratories',
+    'tests',
+    'project'
+  ];
+
+  for (const assessment of assessments) {
+    validateScore(scores[assessment], assessment);
+  }
+}
+
 // Округлення результату до двох знаків після коми
 function roundToTwoDecimals(value: number): number {
   return Math.round((value + Number.EPSILON) * 100) / 100;
@@ -48,9 +62,7 @@ export function calculateWeightedScore(
   scores: StudentScores
 ): number {
 
-  validateScore(scores.laboratories, 'laboratories');
-  validateScore(scores.tests, 'tests');
-  validateScore(scores.project, 'project');
+  validateAssessmentScores(scores);
 
   const total =
     scores.laboratories * WEIGHTS.laboratories +
