@@ -24,6 +24,21 @@ const WEIGHTS = {
 const MIN_SCORE = 0;
 const MAX_SCORE = 100;
 
+// РЕФАКТОРИНГ №2:
+// Межі оцінювання за шкалою ЄКТС винесені в окрему конфігурацію
+const ECTS_THRESHOLDS: {
+  minScore: number;
+  grade: EctsGrade;
+}[] = [
+  { minScore: 90, grade: 'A' },
+  { minScore: 82, grade: 'B' },
+  { minScore: 75, grade: 'C' },
+  { minScore: 67, grade: 'D' },
+  { minScore: 60, grade: 'E' },
+  { minScore: 35, grade: 'FX' },
+  { minScore: 0, grade: 'F' }
+];
+
 // Перевірка коректності оцінки
 function validateScore(
   value: number,
@@ -39,7 +54,8 @@ function validateScore(
   }
 }
 
-// Перевірка всіх складових оцінювання
+// РЕФАКТОРИНГ №1:
+// Перевірка всіх складових оцінювання винесена в окрему функцію
 function validateAssessmentScores(scores: StudentScores): void {
   const assessments: AssessmentType[] = [
     'laboratories',
@@ -62,6 +78,7 @@ export function calculateWeightedScore(
   scores: StudentScores
 ): number {
 
+  // Використання рефакторингу №1
   validateAssessmentScores(scores);
 
   const total =
@@ -77,14 +94,13 @@ export function getEctsGrade(score: number): EctsGrade {
 
   validateScore(score, 'final');
 
-  if (score >= 90) return 'A';
-  if (score >= 82) return 'B';
-  if (score >= 75) return 'C';
-  if (score >= 67) return 'D';
-  if (score >= 60) return 'E';
-  if (score >= 35) return 'FX';
+  // Використання рефакторингу №2:
+  // Пошук відповідної оцінки в конфігурації ECTS_THRESHOLDS
+  const result = ECTS_THRESHOLDS.find(
+    (threshold) => score >= threshold.minScore
+  );
 
-  return 'F';
+  return result!.grade;
 }
 
 // Формування повного результату оцінювання
