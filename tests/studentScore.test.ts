@@ -134,3 +134,62 @@ describe('calculateWeightedScore', () => {
     }
   );
 });
+
+
+// Тестування переведення в шкалу ЄКТС
+
+describe('getEctsGrade', () => {
+
+  it.each([
+    { score: 100, expected: 'A' },
+    { score: 90, expected: 'A' },
+
+    { score: 89.99, expected: 'B' },
+    { score: 82, expected: 'B' },
+
+    { score: 81.99, expected: 'C' },
+    { score: 75, expected: 'C' },
+
+    { score: 74.99, expected: 'D' },
+    { score: 67, expected: 'D' },
+
+    { score: 66.99, expected: 'E' },
+    { score: 60, expected: 'E' },
+
+    { score: 59.99, expected: 'FX' },
+    { score: 35, expected: 'FX' },
+
+    { score: 34.99, expected: 'F' },
+    { score: 0, expected: 'F' }
+
+  ] as const)(
+    'maps $score points to $expected',
+    ({ score, expected }) => {
+
+      expect(getEctsGrade(score)).toBe(expected);
+    }
+  );
+
+  // Перевірка виходу за межі діапазону
+  it.each([-1, 100.01])(
+    'rejects score outside 0–100: %s',
+    (score) => {
+
+      expect(() => getEctsGrade(score))
+        .toThrow('INVALID_SCORE_RANGE:final');
+    }
+  );
+
+  // Перевірка некоректних числових значень
+  it.each([
+    Number.NaN,
+    Number.POSITIVE_INFINITY
+  ])(
+    'rejects non-finite final score: %s',
+    (score) => {
+
+      expect(() => getEctsGrade(score))
+        .toThrow('INVALID_SCORE_TYPE:final');
+    }
+  );
+});
